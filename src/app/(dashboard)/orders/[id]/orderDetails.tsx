@@ -58,6 +58,7 @@ export default function OrderDetails({ data }: { data: IData }) {
     profit,
     courier,
     userId,
+    consignment_id
   } = data.orderDetails
   const updateItems = items.map((v) => {
     return {
@@ -204,6 +205,9 @@ export default function OrderDetails({ data }: { data: IData }) {
           <div className="flex flex-col gap-2 p-2">
             <h2>Order Id: #OM-{id}</h2>
             <h2>Order Status: {status}</h2>
+            {
+            consignment_id ? <h2>Parcel Id: {status}</h2> : ""
+            }
             <h2>Customer Name: {name}</h2>
             <h2>Customer Address: {address}</h2>
             <h2>Customer Phone: {phone}</h2>

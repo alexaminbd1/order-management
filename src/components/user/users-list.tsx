@@ -57,6 +57,9 @@ interface Idata {
     image: string
     currentBalance: number
     deliveryCharge: number
+    _count:{
+      order: number
+    }
   }[]
 }
 
@@ -206,7 +209,7 @@ export default function UserList() {
                       <TableCell className="hidden md:table-cell">
                         {d.deliveryCharge}
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">0</TableCell>
+                      <TableCell className="hidden md:table-cell">{d._count.order}</TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

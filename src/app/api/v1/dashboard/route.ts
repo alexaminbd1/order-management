@@ -19,22 +19,6 @@ export const GET = async () => {
     },
   })
 
-  // Or get individual counts:
-  const pendingOrders = await prisma.order.count({
-    where: {
-      userId: isUser ? {} : session?.user?.id,
-      status: "PENDING",
-    },
-  })
-
-  const deliveryOrders = await prisma.order.count({
-    where: { userId: isUser ? {} : session?.user?.id, status: "DELIVERY" },
-  })
-
-  const completedOrders = await prisma.order.count({
-    where: { userId: isUser ? {} : session?.user?.id, status: "DRAFT" }, // Adjust based on your completed status
-  })
-
   // Top selling products
   const topProducts = await prisma.orderItem.groupBy({
     by: ["productId"],
@@ -65,7 +49,7 @@ export const GET = async () => {
       status: "PENDING",
     },
   })
-
+  
   // Transaction summary
   const transactionSummary = await prisma.transaction.groupBy({
     by: ["type"],
@@ -79,9 +63,6 @@ export const GET = async () => {
 
   return NextResponse.json({
     orderStatusCounts,
-    pendingOrders,
-    deliveryOrders,
-    completedOrders,
     totalProducts: totalProducts ? isUser : null,
     topProducts,
     totalProfit,

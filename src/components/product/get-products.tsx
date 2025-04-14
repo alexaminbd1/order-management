@@ -47,6 +47,9 @@ interface IProduct {
   totalSells?: number
   createdAt: string
   image: string | null
+  _count:{
+    orders: number
+  }
 }
 
 export default function GetProducts() {
@@ -120,7 +123,7 @@ export default function GetProducts() {
                     <TableCell className="hidden md:table-cell">
                       {v.price}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">25</TableCell>
+                    <TableCell className="hidden md:table-cell">{v._count.orders}</TableCell>
                     <TableCell className="hidden md:table-cell">
                     {formatDistanceToNow(new Date(v.createdAt), {
                       addSuffix: true
