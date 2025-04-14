@@ -1,0 +1,276 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String       @id @default(cuid())
+  name             String?
+  phone            String       @unique
+  image            String?
+  password         String
+  paymentType      String?
+  paymentNumber    String?
+  payOutAmount     Float        @default(0)
+  totalOrderAmount Float?       @default(0)
+  currentBalance   Float        @default(0)
+  deliveryCharge   Int?
+  status           UserStatus
+  roles            RoleType
+  product          Product[]
+  ticket           Ticket[]
+  withdrawal       Withdrawal[]
+  order            Order[]
+
+  accounts          Account[]
+  sessions          Session[]
+  transaction       Transaction[]
+  createTransaction Transaction[]   @relation("tCreate")
+  // Optional for WebAuthn support
+  Authenticator     Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum RoleType {
+  ADMIN
+  USER
+  MANAGER
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  BAN
+}
+
+model Product {
+  id           Int           @id @default(autoincrement())
+  name         String
+  about        String?
+  image        String?
+  price        Float
+  byPrice      Float?
+  maxPrice     Float?
+  suggestPrice Int?
+  status       ProductStatus
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  orders       OrderItem[]
+  courierId    Int
+  courier      Courier       @relation(fields: [courierId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ProductStatus {
+  STOCK_OUT
+  CLOSED
+  ACTIVE
+  DRAFT
+  FAKE
+}
+
+model Order {
+  id       Int     @id @default(autoincrement())
+  name     String
+  phone    String
+  address  String?
+  district String
+  note     String?
+
+  consignment_id String?
+  tracking_code  String?
+  isDelivery     Boolean @default(false)
+
+  totalPrice Float
+  sellPrice  Float?      @default(0)
+  delivery   Float       @default(0)
+  profit     Float       @default(0)
+  status     OrderStatus
+  items      OrderItem[]
+
+  courierId      Int?          // Made courierId optional
+  courier        Courier?      @relation(fields: [courierId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  price     Float // Store the price of the product at the time of purchase
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum OrderStatus {
+  DRAFT
+  PENDING
+  DELIVERY
+  CANCEL
+}
+
+model Withdrawal {
+  id            Int              @id @default(autoincrement())
+  amount        Float
+  type          String
+  accountNumber String?
+  comment       String?
+  message       String?
+  status        WithdrawalStatus @default(PENDING)
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updateUser String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVE
+  REJECT
+}
+
+model Ticket {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  status      TicketStatus @default(OPEN)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies     Reply[]
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+model Reply {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+}
+
+model Courier {
+  id        Int           @id @default(autoincrement())
+  charge    Float?
+  name      String
+  apiKey    String
+  secretKey String
+  order     Order[]
+  status    CourierStatus
+  products  Product[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+enum CourierStatus {
+  ACTIVE
+  PENDING
+  CLOSED
+}
+
+model Transaction {
+  id      Int     @id @default(autoincrement())
+  type    TType
+  amount  Float
+  label   String?
+  message String?
+
+  forUserId String
+  forUser   User   @relation(fields: [forUserId], references: [id], onDelete: Cascade)
+
+  tCreateId String
+  tCrate    User   @relation("tCreate", fields: [tCreateId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum TType {
+  INCOME
+  EXPENSE
+  GIFT
+  DISCARD
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
