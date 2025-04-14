@@ -1,7 +1,7 @@
 export default function page() {
   return (
     <div>
-      <h2>transaction</h2>
+      <h2>This dashboard transaction page welcome</h2>
     </div>
   )
 }
