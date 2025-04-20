@@ -17,7 +17,7 @@ export default function DeleteOrder({ id }: { id: number }) {
     mutationFn: () => deleteOrder({ id }),
     onSuccess: () => {
       toast("Order Delete Success!")
-      router.push("/orders")
+      router.back()
     },
   })
   return isPending ? (

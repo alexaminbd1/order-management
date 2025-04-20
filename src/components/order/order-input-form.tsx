@@ -100,7 +100,7 @@ export default function OrderInputForm({ cart }: { cart: ICart[] }) {
     (acc, item) => {
       acc.totalPrice += item.price * item.quantity
       acc.totalProfit += item.profit * item.quantity
-      acc.totalSell += item.sell * item.quantity
+      acc.totalSell += item.sell
       return acc
     },
     { totalPrice: 0, totalProfit: 0, totalSell: 0 }

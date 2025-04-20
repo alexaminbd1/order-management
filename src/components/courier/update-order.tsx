@@ -15,7 +15,6 @@ const getData = async ({
   type: string
   courier?: string
 }) => {
-
   const res = await axios.patch(
     `/api/v1/order/${id}?type=${type}&courier=${courier}`
   )
@@ -38,7 +37,7 @@ export default function UpdateOrder({
     mutationFn: () => getData({ id, type, courier: courier ? courier : "" }),
     onSuccess: () => {
       toast("Successfully Update!")
-      router.push("/orders")
+      router.back()
     },
   })
   return isPending ? (
