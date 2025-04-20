@@ -59,7 +59,9 @@ export async function POST(request: Request) {
       { status: 401 }
     )
   try {
-    const { success, data } = orderSchemaApi.safeParse(await request.json())
+    // const commingData = await request.json()
+    const { success, data , error} = orderSchemaApi.safeParse(await request.json())
+    console.log(data, "data", error, "--")
     if (!success)
       return NextResponse.json(
         {

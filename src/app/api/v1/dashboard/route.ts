@@ -26,7 +26,12 @@ export const GET = async (req: Request) => {
       totalPrice: true,
       profit: true,
     },
+    orderBy:{
+      status: "desc"
+    }
   })
+
+  console.log(orderStatusCounts, "orderStatusCounts")
 
   // Top selling products
   const topProductsId = await prisma.orderItem.groupBy({

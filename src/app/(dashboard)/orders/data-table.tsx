@@ -296,11 +296,6 @@ export function DataTable() {
           </TableBody>
         </Table>
       </div>
-      {/* <DataTablePagination
-        setPagination={setPagination}
-        pagination={pagination}
-        totalOrder={data?.totalOrders ?? 0}
-      /> */}
       <PaginationWithLinks
         page={page ? Number(page) : 1}
         pageSize={Number(take)}

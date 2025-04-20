@@ -27,12 +27,17 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+
 
 export default function DasIndex() {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: addDays(new Date(), -30),
     to: new Date(),
   })
+
+  const { data: session } = useSession()
+  
   const getDashboards = async (): Promise<DashboardData> => {
     const products = await axios.get(
       `/api/v1/dashboard?to=${date?.to}&from=${date?.from}`
@@ -64,7 +69,9 @@ export default function DasIndex() {
                 {isLoading ? 0 : v._count._all}
               </div>
               <p className="text-xs text-muted-foreground">
-                +201 since last hour
+                {
+                  session?.user?.role === "ADMIN" ? <>Total Sell: {v._sum.sellPrice}, Your Ammount: {v._sum.totalPrice}, Customer Amount: {v._sum.profit}</> : <>Total Sell: {v._sum.sellPrice}, Author Ammount: {v._sum.totalPrice}, Your Amount: {v._sum.profit}</>
+                }
               </p>
             </CardContent>
           </Card>

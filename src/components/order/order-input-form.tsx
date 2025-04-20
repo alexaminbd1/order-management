@@ -61,13 +61,24 @@ export default function OrderInputForm({ cart }: { cart: ICart[] }) {
   })
 
   const dCharge = data?.user.deliveryCharge ? data?.user.deliveryCharge : 90
+  const totals = cart.reduce(
+    (acc, item) => {
+      acc.totalPrice += item.price * item.quantity
+      acc.totalProfit += item.profit * item.quantity
+      acc.totalSell += item.sell
+      return acc
+    },
+    { totalPrice: 0, totalProfit: 0, totalSell: 0 }
+  )
+
+
 
   const createOrder = async (data: orderType) => {
     const res = await axios.post("/api/v1/order", {
       ...data,
       sellPrice: totals.totalSell,
       totalPrice: totals.totalPrice,
-      profit: totals.totalProfit - dCharge,
+      profit: totals.totalSell - totals.totalPrice - dCharge,
       delivery: dCharge,
       items: cart.map(
         (v) =>
@@ -88,23 +99,14 @@ export default function OrderInputForm({ cart }: { cart: ICart[] }) {
       router.push("/create-order")
     },
     onError: (data) => {
-      console.log(data, "error print")
-      toast("Order Create file")
+      toast("Order Create fail", {type: "error"})
     },
   })
 
   const form = useForm<orderType>({
     resolver: zodResolver(orderSchema),
   })
-  const totals = cart.reduce(
-    (acc, item) => {
-      acc.totalPrice += item.price * item.quantity
-      acc.totalProfit += item.profit * item.quantity
-      acc.totalSell += item.sell
-      return acc
-    },
-    { totalPrice: 0, totalProfit: 0, totalSell: 0 }
-  )
+  
 
   const onSubmit = async (data: orderType) => {
     if (cart.length < 1) {
@@ -133,7 +135,7 @@ export default function OrderInputForm({ cart }: { cart: ICart[] }) {
         <div className="flex justify-between items-center">
           <h3>Total Profit : </h3>
           <h3>
-            {totals.totalProfit > 1 ? totals.totalProfit - dCharge : 0}
+            {totals.totalProfit > 1 ? totals.totalSell - totals.totalPrice - dCharge : 0}
             Tk
           </h3>
         </div>
