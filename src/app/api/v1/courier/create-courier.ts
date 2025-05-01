@@ -6,7 +6,7 @@ export const createCourier = async (data: courierType) => {
   return await prisma.courier.create({
     data: {
       ...data,
-      status: data.status ? (data.status as CourierStatus) : "PENDING",
+      status: data.status ? data.status as CourierStatus : "PENDING",
     },
   })
 }

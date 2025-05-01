@@ -153,13 +153,13 @@ export default function DasIndex() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Customer</TableHead>
+                  <TableHead>User Name and phone number</TableHead>
                   <TableHead className="hidden xl:table-column">Type</TableHead>
                   <TableHead className="hidden xl:table-column">
                     Status
                   </TableHead>
                   <TableHead className=" xl:table-column">Date</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead className="text-right">Total Order</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -173,9 +173,6 @@ export default function DasIndex() {
                       <div className="font-medium">
                         <h2>{v.name}</h2>
                         <h2>{v.phone}</h2>
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        {v.p}
                       </div>
                     </TableCell>
                     <TableCell className="hidden xl:table-column">

@@ -1,8 +1,6 @@
 import { prisma } from "@/prisma"
-import { CourierStatus } from "@prisma/client"
 
 type CourierFilter = {
-  status?: CourierStatus
   OR?: Array<
     | { name: { contains: string; mode: "insensitive" } }
     | { apiKey: { contains: string; mode: "insensitive" } }
@@ -13,7 +11,6 @@ type CourierFilter = {
 export const getCourier = async ({
   take,
   skip,
-  status,
   text,
 }: {
   take?: number
@@ -22,7 +19,6 @@ export const getCourier = async ({
   text?: string
 }) => {
   const filter: CourierFilter = {}
-  filter.status = status ? (status as CourierStatus) : undefined
   if (text) {
     filter.OR = [
       { name: { contains: text, mode: "insensitive" } },

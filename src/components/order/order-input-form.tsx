@@ -98,7 +98,7 @@ export default function OrderInputForm({ cart }: { cart: ICart[] }) {
       toast("Order create success!", { type: "success" })
       router.push("/create-order")
     },
-    onError: (data) => {
+    onError: () => {
       toast("Order Create fail", {type: "error"})
     },
   })

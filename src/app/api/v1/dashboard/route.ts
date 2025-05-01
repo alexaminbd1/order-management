@@ -3,6 +3,8 @@ import { isAdmin } from "@/lib/custom-auth"
 import { prisma } from "@/prisma"
 import { NextResponse } from "next/server"
 
+// interface ITopProductId { _count: { userId: number }, userId: string }
+
 export const GET = async (req: Request) => {
   const session = await auth()
 
@@ -30,8 +32,6 @@ export const GET = async (req: Request) => {
       status: "desc"
     }
   })
-
-  console.log(orderStatusCounts, "orderStatusCounts")
 
   // Top selling products
   const topProductsId = await prisma.orderItem.groupBy({
@@ -77,6 +77,8 @@ export const GET = async (req: Request) => {
       password: true,
     },
   })
+
+  console.log(topProductsId, "topProductsId", topUsersId, "topUsersId")
 
   // Pending withdrawals
   const pendingWithdrawals = await prisma.withdrawal.aggregate({
